@@ -1,0 +1,33 @@
+{
+	"folders": [
+		{
+			"name": "front-end",
+			"path": "front-end"
+		},
+		{
+			"name": "broker-service",
+			"path": "broker-service"
+		},
+		{
+			"name": "logger-service",
+			"path": "logger-service"
+		},
+		{
+			"name": "auth-service",
+			"path": "auth-service"
+		},
+		{
+			"name": "mail-service",
+			"path": "mail-service"
+		},
+		{
+			"name": "listener-service",
+			"path": "listener-service"
+		},
+		{
+			"name": "project",
+			"path": "project"
+		}
+	],
+	"settings": {}
+}

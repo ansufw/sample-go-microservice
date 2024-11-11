@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+
+  caddy:
+    image: ansuf/micro-caddy:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "80:80" 
+      - "443:443" 
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+  front-end:
+    image: ansuf/frontend:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  broker-service: 
+    image: ansuf/broker-service:1.0.1
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  listener-service: 
+    image: ansuf/listener-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+  
+  auth-service:
+    image: ansuf/auth-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DSN: postgres://postgres:password@postgres:5432/users?sslmode=disable&connect_timeout=10&timezone=UTC
+
+  log-service:
+    image: ansuf/logger-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  mailer-service:
+    image: ansuf/mailer-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: none
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      FROM_NAME: "Go Microservice"
+      FROM_ADDRESS: "go-microservice@example.com"
+
+  rabbitmq:
+    image: rabbitmq:3.9-alpine
+    deploy:
+      mode: global
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+    deploy:
+      mode: global
+
+  mongo:
+    image: 'mongo:4.4.6'
+    ports:
+      - "27017:27017"
+    deploy:
+      mode: global
+    environment:
+      - MONGO_INITDB_DATABASE=logs
+      - MONGO_INITDB_ROOT_USERNAME=admin      
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./db-data/mongo/:/data/db
+
+  postgres:
+    image: 'postgres:14.0'
+    ports:
+      - "5432:5432"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
+
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:
